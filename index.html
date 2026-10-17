@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teresa Shang</title>
+  <meta name="description" content="Teresa Shang, robotics and machine learning at the University of Pennsylvania. What a learned model of a physical system should represent so a robot can plan with it.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cline x1='9' y1='22' x2='22' y2='10' stroke='%230F6B66' stroke-width='2.5'/%3E%3Ccircle cx='9' cy='22' r='6' fill='%23D3931C'/%3E%3Ccircle cx='22' cy='10' r='5' fill='%23D3931C'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="scene.js" defer></script>
+</head>
+<body>
+  <main class="page">
+
+    <header class="masthead">
+      <h1>Teresa Shang</h1>
+      <p class="role">Robotics and machine learning, University of Pennsylvania</p>
+      <nav class="links" aria-label="Contact and profiles">
+        <!-- TODO: replace the three addresses below -->
+        <a href="mailto:you@seas.upenn.edu">Email</a>
+        <a href="https://github.com/YOUR-USERNAME">GitHub</a>
+        <a href="https://scholar.google.com/citations?user=YOUR-ID">Google Scholar</a>
+      </nav>
+    </header>
+
+    <figure class="scene">
+      <canvas id="scene" role="img"
+        aria-label="Animated diagram: round objects drift and collide inside a box. A line joins any two objects that are close enough to touch soon."></canvas>
+      <figcaption>
+        <span class="note">Each line joins two objects close enough to affect each other soon. The rule that draws the lines is the same for 3 objects or 30. Click the box to add one.</span>
+        <span class="controls">
+          <span id="count" aria-live="polite">6 objects</span>
+          <button type="button" id="add">Add an object</button>
+          <button type="button" id="reset">Reset</button>
+        </span>
+      </figcaption>
+    </figure>
+
+    <section class="about" aria-labelledby="about-heading">
+      <h2 id="about-heading" class="visually-hidden">About</h2>
+      <p>I’m finishing an undergraduate degree in artificial intelligence and a master’s in robotics at Penn (May 2027). I work in the GRASP Lab with Alejandro Ribeiro and Pratik Chaudhari.</p>
+      <p>I study what a learned model of a physical system should represent, such as objects, contacts, and fast motion, so that a robot can plan with it. I also want that model to keep working when the task, the robot, or the number of objects changes.</p>
+      <p>I came to this question through graph neural networks. I studied why graph transformers trained on small graphs keep working on larger ones, and my master’s thesis builds a graph foundation model that carries across tasks and domains. I then moved to the physical world. I built a predictive model for event cameras, which record fast motion as a stream of brightness changes instead of frames, and I’m now adding memory to that representation for localization on fast drones. For my senior design project, I’m building the perception side of 3D reconstruction for a robotic hand.</p>
+      <p>I’m applying to PhD programs for Fall 2027.</p>
+    </section>
+
+    <section class="pubs" aria-labelledby="pubs-heading">
+      <h2 id="pubs-heading">Publications</h2>
+      <ul>
+        <li>
+          <p class="pub-title">Size Transferability of Graph Transformers with Convolutional Encodings</p>
+          <!-- TODO: full author list in order -->
+          <p class="pub-authors">First Author, <strong>Teresa Shang</strong>, Other Authors</p>
+          <!-- TODO: venue/status and links; delete any link you don't have -->
+          <p class="pub-venue">Under review, 2026 <a href="#">Paper</a> <a href="#">Code</a></p>
+        </li>
+        <li>
+          <!-- TODO: your NeurIPS paper -->
+          <p class="pub-title">Title of the NeurIPS paper</p>
+          <p class="pub-authors">First Author, Second Author, <strong>Teresa Shang</strong>, Other Authors</p>
+          <p class="pub-venue">NeurIPS 2026 <a href="#">Paper</a></p>
+        </li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>Last updated October 2026.</p>
+    </footer>
+
+  </main>
+</body>
+</html>
