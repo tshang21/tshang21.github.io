@@ -2,74 +2,484 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Teresa Shang</title>
   <meta name="description" content="Teresa Shang, robotics and machine learning at the University of Pennsylvania. What a learned model of a physical system should represent so a robot can plan with it.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cline x1='9' y1='22' x2='22' y2='10' stroke='%230F6B66' stroke-width='2.5'/%3E%3Ccircle cx='9' cy='22' r='6' fill='%23D3931C'/%3E%3Ccircle cx='22' cy='10' r='5' fill='%23D3931C'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cline x1='9' y1='22' x2='22' y2='10' stroke='%232F5D50' stroke-width='2.5'/%3E%3Ccircle cx='9' cy='22' r='6' fill='%23B9852E'/%3E%3Ccircle cx='22' cy='10' r='5' fill='%23B9852E'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="scene.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- Colors: light by default, dark when the visitor asks ---------- */
+    :root {
+      --bg: #F7F8F6; --ink: #1F2A37; --muted: #5B6573; --line: #DFE3DD;
+      --accent: #2F5D50; --thumb: #E6EBE6; --photo-bg: #DCE5DF; --photo-ink: #2F5D50;
+      --edge-c: #2F5D50; --obj-c: #B9852E;
+      --skin: #EBCDB6; --skin-line: #B88C72; --band: #26312E; --bone: #1F6F64; --mug: #B7C7D2; --mug-line: #7E95A4; --line-c: #C9D0C9; --shadow-c: #9AA39C; --thumb-bg: #E6EBE6;
+      color-scheme: light;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #151A19; --ink: #E2E7E4; --muted: #9AA6A0; --line: #2A3330;
+        --accent: #8CC3AE; --thumb: #1E2624; --photo-bg: #22302B; --photo-ink: #8CC3AE;
+        --edge-c: #8CC3AE; --obj-c: #D9AA55;
+        --skin: #D8B096; --skin-line: #8E6750; --band: #0E1312; --bone: #1F6F64; --mug: #6F8594; --mug-line: #4A5D6A; --line-c: #34403C; --shadow-c: #000000; --thumb-bg: #1E2624;
+        color-scheme: dark;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #151A19; --ink: #E2E7E4; --muted: #9AA6A0; --line: #2A3330;
+      --accent: #8CC3AE; --thumb: #1E2624; --photo-bg: #22302B; --photo-ink: #8CC3AE;
+      --edge-c: #8CC3AE; --obj-c: #D9AA55;
+      --skin: #D8B096; --skin-line: #8E6750; --band: #0E1312; --bone: #1F6F64; --mug: #6F8594; --mug-line: #4A5D6A; --line-c: #34403C; --shadow-c: #000000; --thumb-bg: #1E2624;
+      color-scheme: dark;
+    }
+    html { scroll-padding-top: env(safe-area-inset-top, 0px); -webkit-text-size-adjust: 100%; }
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg); color: var(--ink);
+      font: 400 1.06rem/1.65 "Literata", Georgia, serif;
+    }
+    a { color: var(--accent); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+    /* ---------- Layout: sidebar + content ---------- */
+    .wrap {
+      max-width: 68rem; margin: 0 auto;
+      padding: 3.5rem 1.5rem 4rem;
+      display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 4rem;
+    }
+    aside { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 3.5rem); align-self: start; }
+    .headshot {
+      display: grid; place-items: center; overflow: hidden;
+      width: 100%; max-width: 13rem; aspect-ratio: 4 / 5; border-radius: 6px;
+      background: var(--photo-bg); color: var(--photo-ink); font-size: 2.4rem; font-weight: 500;
+    }
+    .headshot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    h1 { font-size: 1.85rem; font-weight: 600; line-height: 1.15; margin: 1.4rem 0 .4rem; letter-spacing: -.01em; }
+    .role { margin: 0; color: var(--muted); font-size: .98rem; line-height: 1.45; }
+    .links { list-style: none; padding: 1.1rem 0 0; margin: 1.1rem 0 0; border-top: 1px solid var(--line); display: flex; gap: .35rem; }
+    .links a { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; margin-left: -.45rem; margin-right: .45rem; border-radius: 6px; color: var(--muted); }
+    .links a:hover { color: var(--accent); background: var(--thumb); }
+    .links svg { width: 1.3rem; height: 1.3rem; display: block; }
+
+    main { max-width: 46rem; }
+    .lead { font-size: 1.3rem; line-height: 1.5; margin: 0 0 1.25rem; }
+    main > p { margin: 0 0 1em; max-width: 40rem; }
+    h2 { font-size: 1.3rem; font-weight: 600; margin: 3rem 0 .25rem; padding-bottom: .5rem; border-bottom: 1px solid var(--line); }
+
+    /* ---------- Entries: image left, text right ---------- */
+    .entry {
+      display: grid; grid-template-columns: 12.5rem minmax(0, 1fr); gap: 1.6rem;
+      padding: 1.4rem 0; align-items: start;
+    }
+    .entry + .entry { border-top: 1px dashed var(--line); }
+    .entry.no-thumb { grid-template-columns: minmax(0, 1fr); padding: 1.1rem 0; }
+    .thumb {
+      aspect-ratio: 4 / 3; border-radius: 6px; overflow: hidden;
+      background: var(--thumb); display: grid; place-items: center;
+      color: var(--muted); font-size: .85rem; font-style: italic;
+    }
+    .thumb img, .thumb video, .thumb svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .thumb .pulse { transform-box: fill-box; transform-origin: center; animation: pulse 2.4s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(.75); opacity: .12; } 50% { transform: scale(1.15); opacity: .32; } }
+    @media (prefers-reduced-motion: reduce) { .thumb .pulse { animation: none; } }
+    .entry h3 { font-size: 1.06rem; font-weight: 600; line-height: 1.4; margin: 0; }
+    .entry h3 a { color: inherit; text-decoration: none; }
+    .entry h3 a:hover { color: var(--accent); text-decoration: underline; }
+    .authors, .venue { margin: .2rem 0 0; color: var(--muted); font-size: .95rem; line-height: 1.45; }
+    .authors strong { color: var(--ink); font-weight: 600; }
+    .venue em { color: var(--ink); }
+    .entry-links { margin: .35rem 0 0; font-size: .95rem; }
+    .entry-links a + a::before { content: "/"; color: var(--muted); margin: 0 .5rem; display: inline-block; text-decoration: none; }
+    .desc { margin: .55rem 0 0; font-size: .98rem; line-height: 1.6; }
+
+    .desc.note { color: var(--muted); font-size: .92rem; }
+    .teach p { margin: 1rem 0 0; font-size: .98rem; }
+    .teach p strong { font-weight: 600; }
+    footer { margin-top: 3.5rem; color: var(--muted); font-size: .88rem; }
+    .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    @media (max-width: 52rem) {
+      .wrap { grid-template-columns: 1fr; gap: 2rem; padding-top: 2.5rem; }
+      aside { position: static; display: grid; grid-template-columns: 7.5rem 1fr; gap: 0 1.25rem; }
+      .headshot { grid-row: span 3; font-size: 1.6rem; }
+      h1 { margin-top: 0; }
+      .links { grid-column: 2; border: 0; padding-top: 0; margin-top: .5rem; }
+    }
+    @media (max-width: 34rem) {
+      .entry { grid-template-columns: 1fr; gap: .9rem; }
+      .thumb { max-width: 22rem; }
+    }
+  </style>
 </head>
 <body>
-  <main class="page">
+  <div class="wrap">
 
-    <header class="masthead">
+    <aside>
+            <div class="headshot"><img src="images/headshot.jpg" alt="Teresa Shang" width="720" height="900"></div>
       <h1>Teresa Shang</h1>
-      <p class="role">Robotics and machine learning, University of Pennsylvania</p>
-      <nav class="links" aria-label="Contact and profiles">
-        <!-- TODO: replace the three addresses below -->
-        <a href="mailto:you@seas.upenn.edu">Email</a>
-        <a href="https://github.com/YOUR-USERNAME">GitHub</a>
-        <a href="https://scholar.google.com/citations?user=YOUR-ID">Google Scholar</a>
-      </nav>
-    </header>
-
-    <figure class="scene">
-      <canvas id="scene" role="img"
-        aria-label="Animated diagram: round objects drift and collide inside a box. A line joins any two objects that are close enough to touch soon."></canvas>
-      <figcaption>
-        <span class="note">Each line joins two objects close enough to affect each other soon. The rule that draws the lines is the same for 3 objects or 30. Click the box to add one.</span>
-        <span class="controls">
-          <span id="count" aria-live="polite">6 objects</span>
-          <button type="button" id="add">Add an object</button>
-          <button type="button" id="reset">Reset</button>
-        </span>
-      </figcaption>
-    </figure>
-
-    <section class="about" aria-labelledby="about-heading">
-      <h2 id="about-heading" class="visually-hidden">About</h2>
-      <p>I’m finishing an undergraduate degree in artificial intelligence and a master’s in robotics at Penn (May 2027). I work in the GRASP Lab with Alejandro Ribeiro and Pratik Chaudhari.</p>
-      <p>I study what a learned model of a physical system should represent, such as objects, contacts, and fast motion, so that a robot can plan with it. I also want that model to keep working when the task, the robot, or the number of objects changes.</p>
-      <p>I came to this question through graph neural networks. I studied why graph transformers trained on small graphs keep working on larger ones, and my master’s thesis builds a graph foundation model that carries across tasks and domains. I then moved to the physical world. I built a predictive model for event cameras, which record fast motion as a stream of brightness changes instead of frames, and I’m now adding memory to that representation for localization on fast drones. For my senior design project, I’m building the perception side of 3D reconstruction for a robotic hand.</p>
-      <p>I’m applying to PhD programs for Fall 2027.</p>
-    </section>
-
-    <section class="pubs" aria-labelledby="pubs-heading">
-      <h2 id="pubs-heading">Publications</h2>
-      <ul>
-        <li>
-          <p class="pub-title">Size Transferability of Graph Transformers with Convolutional Encodings</p>
-          <!-- TODO: full author list in order -->
-          <p class="pub-authors">First Author, <strong>Teresa Shang</strong>, Other Authors</p>
-          <!-- TODO: venue/status and links; delete any link you don't have -->
-          <p class="pub-venue">Under review, 2026 <a href="#">Paper</a> <a href="#">Code</a></p>
-        </li>
-        <li>
-          <!-- TODO: your NeurIPS paper -->
-          <p class="pub-title">Title of the NeurIPS paper</p>
-          <p class="pub-authors">First Author, Second Author, <strong>Teresa Shang</strong>, Other Authors</p>
-          <p class="pub-venue">NeurIPS 2026 <a href="#">Paper</a></p>
-        </li>
+      <p class="role">AI + Robotics<br>University of Pennsylvania</p>
+      <!-- TODO: replace YOUR-USERNAME and YOUR-ID below -->
+      <!-- Icons: Font Awesome Free 7.3.1, https://fontawesome.com/license/free (CC BY 4.0) -->
+      <ul class="links">
+        <li><a href="mailto:tshang@engineering.upenn.edu" target="_blank" rel="noopener" aria-label="Email" title="Email"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M48 64c-26.5 0-48 21.5-48 48 0 15.1 7.1 29.3 19.2 38.4l208 156c17.1 12.8 40.5 12.8 57.6 0l208-156c12.1-9.1 19.2-23.3 19.2-38.4 0-26.5-21.5-48-48-48L48 64zM0 196L0 384c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-188-198.4 148.8c-34.1 25.6-81.1 25.6-115.2 0L0 196z"/></svg></a></li>
+        <li><a href="https://github.com/YOUR-USERNAME" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5l0 52C323 491.5 335.5 500 350.5 494 441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5l0-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21z"/></svg></a></li>
+        <li><a href="https://scholar.google.com/citations?user=YOUR-ID" target="_blank" rel="noopener" aria-label="Google Scholar" title="Google Scholar"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M390.9 298.5s0 .1 .1 .1c9.2 19.4 14.4 41.1 14.4 64-.1 82.5-66.9 149.4-149.4 149.4S106.7 445.1 106.7 362.7c0-22.9 5.2-44.6 14.4-64 1.7-3.6 3.6-7.2 5.6-10.7 4.4-7.6 9.4-14.7 15-21.3 27.4-32.6 68.5-53.3 114.4-53.3 33.6 0 64.6 11.1 89.6 29.9 9.1 6.9 17.4 14.7 24.8 23.5 5.6 6.6 10.6 13.8 15 21.3 2 3.4 3.8 7 5.5 10.5l-.1-.1zm26.4-18.8c-30.1-58.4-91-98.4-161.3-98.4s-131.2 40-161.3 98.4l-94.7-77 256-202.7 256 202.7-94.7 77.1 0-.1z"/></svg></a></li>
+        <li><a href="https://www.linkedin.com/in/xiaotao-teresa-shang" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M416 32L31.9 32C14.3 32 0 46.5 0 64.3L0 447.7C0 465.5 14.3 480 31.9 480L416 480c17.6 0 32-14.5 32-32.3l0-383.4C448 46.5 433.6 32 416 32zM135.4 416l-66.4 0 0-213.8 66.5 0 0 213.8-.1 0zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77zM384.3 416l-66.4 0 0-104c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9l0 105.8-66.4 0 0-213.8 63.7 0 0 29.2 .9 0c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9l0 117.2z"/></svg></a></li>
       </ul>
-    </section>
+    </aside>
 
-    <footer>
-      <p>Last updated October 2026.</p>
-    </footer>
+    <main>
+      <h2 class="vh">About</h2>
+      <p>I’m an undergraduate student in Artificial Intelligence, with a minor in Mathematics, and a master’s student in Robotics at the University of Pennsylvania. I work on graph architectures and graph signal processing with <a href="https://alelab.seas.upenn.edu/" target="_blank" rel="noopener">Dr. Alejandro Ribeiro</a>, and on representations for event cameras with <a href="https://pratikac.github.io/" target="_blank" rel="noopener">Dr. Pratik Chaudhari</a>.</p>
 
-  </main>
+      <!--
+        Each entry's image: replace the <div class="thumb" ...> with
+          <div class="thumb"><img src="images/name.jpg" alt=""></div>
+          <div class="thumb"><video src="images/name.mp4" autoplay muted loop playsinline></video></div>
+      -->
+
+      <h2>Publications</h2>
+
+      <article class="entry no-thumb">
+        <div>
+          <h3>Wireless Link Scheduling with Graph Signal Diffusion</h3>
+          <p class="authors"><strong>T. Shang</strong>, R. García Camargo, Y. B. Uslu, A. Ribeiro</p>
+          <p class="venue">Under review at <em>ICASSP 2027</em></p>
+        </div>
+      </article>
+
+      <article class="entry no-thumb">
+        <div>
+          <h3><a href="https://arxiv.org/abs/2602.15239" target="_blank" rel="noopener">Size-Transferability of Graph Transformers with Convolutional Positional Encodings</a></h3>
+          <p class="authors">J. Porras-Valenzuela, Z. Wang, <strong>T. Shang</strong>, Y. Wang, A. Ribeiro</p>
+          <p class="venue">Under review at <em>ICLR 2027</em></p>
+          <p class="entry-links"><a href="https://arxiv.org/abs/2602.15239" target="_blank" rel="noopener">arXiv</a></p>
+          <p class="desc note">An earlier version, <em>Transferability of Graph Transformers with Convolutional Positional Encodings</em>, was presented at the NPGML Workshop at NeurIPS 2025.</p>
+        </div>
+      </article>
+
+      <h2>Research</h2>
+
+      <article class="entry">
+        <div class="thumb"><video src="images/thesis.mp4" autoplay muted loop playsinline aria-label="Simulated tabletop scene of rigid objects with their contact graph overlaid"></video></div>
+        <div>
+          <h3>Self-Supervised Learning on Physical Interaction Graphs</h3>
+          <p class="venue">Master’s thesis, 2026</p>
+          <p class="desc">Self-supervised learning for graph transformers on physical scenes, where each object is a node in a contact graph that changes over time.</p>
+        </div>
+      </article>
+
+      <article class="entry">
+        <div class="thumb"><video src="images/recurrent-f3.mp4" autoplay muted loop playsinline aria-label="Event camera on an urban drive: ground-truth events on top, Recurrent F3 forecast in orange below"></video></div>
+        <div>
+          <h3>Recurrent Fast Feature Field</h3>
+          <p class="venue">LyRL, 2026</p>
+          <p class="desc">A recurrent extension of Fast Feature Field (F³) that forecasts event-camera features 100 ms into the future.</p>
+        </div>
+      </article>
+
+      <h2>Projects</h2>
+
+      <article class="entry">
+        <div class="thumb" data-anim="carpo"></div>
+        <div>
+          <h3>carpo: Wearable Data Collection for Robot Hand Learning</h3>
+          <p class="venue">Senior design, 2026</p>
+          <p class="desc">An EMG wristband and tactile glove that collect hand-motion and fingertip-force data for training robot hands.</p>
+        </div>
+      </article>
+
+      <article class="entry">
+        <div class="thumb"><video src="images/drone-racing.mp4" autoplay muted loop playsinline aria-label="Trained quadcopter policy flying a loop through racing gates in simulation"></video></div>
+        <div>
+          <h3>Drone Racing with Reinforcement Learning</h3>
+          <p class="venue">2025</p>
+          <p class="desc">A PPO policy for quadcopter gate racing, trained in Isaac Lab and deployed on a real drone.</p>
+        </div>
+      </article>
+
+      <article class="entry">
+        <div class="thumb"><img src="images/mae-robustness.webp" alt="CIFAR-10 frog: original, patch-shuffled, and grayscale inputs above their masked-autoencoder reconstructions" width="960" height="720"></div>
+        <div>
+          <h3>Robustness of Masked Autoencoders under Visual Perturbations</h3>
+          <p class="venue">2025</p>
+          <p class="desc">How the shape of the mask affects the robustness of masked autoencoder features to visual perturbations.</p>
+        </div>
+      </article>
+
+      <article class="entry">
+        <div class="thumb"><img src="images/contact-rich.webp" alt="Walker2d gait: four keyframes from simulation" width="960" height="720"></div>
+        <div>
+          <h3>Contact-Rich Control: Trajectory Optimization vs. RL</h3>
+          <p class="venue">2025</p>
+          <p class="desc">A contact-invariant trajectory optimizer in JAX/Brax, compared against PPO on Walker2d.</p>
+        </div>
+      </article>
+
+      <footer>Last updated October 2026.</footer>
+    </main>
+  </div>
+
+  <!-- Placeholder art for entries without a photo yet. Safe to delete once every entry has an image. -->
+  <script>
+  (() => {
+    function rng(seed) { return () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
+    const S = 'style="stroke:var(--edge-c)"', F = 'style="fill:var(--obj-c)"';
+    const f = n => n.toFixed(1);
+    const line = (a, b, w, o, extra = "") => `<line x1="${f(a[0])}" y1="${f(a[1])}" x2="${f(b[0])}" y2="${f(b[1])}" ${S} stroke-width="${w}" opacity="${o}" ${extra}/>`;
+    const edges = (pts, maxD) => { let s = ""; for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) { const d = Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]); if (d < maxD) s += line(pts[i], pts[j], 1.6, (1 - d / maxD * .6).toFixed(2)); } return s; };
+    const dots = (pts, r) => pts.map(p => `<circle cx="${f(p[0])}" cy="${f(p[1])}" r="${r}" ${F}/>`).join("");
+    const scatter = (R, n, x0, y0, w, h, minD) => { const pts = []; let tries = 0; while (pts.length < n && tries++ < 5000) { const p = [x0 + R() * w, y0 + R() * h]; if (pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > minD)) pts.push(p); } return pts; };
+    const motifs = {
+      grow() {
+        const R = rng(7); let s = "";
+        [[38, 4, 20], [103, 8, 28], [180, 14, 38]].forEach(([cx, n, rad]) => {
+          const pts = [];
+          while (pts.length < n) { const a = R() * 6.283, r = Math.sqrt(R()) * rad, p = [cx + Math.cos(a) * r, 90 + Math.sin(a) * r]; if (pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > 10)) pts.push(p); }
+          s += edges(pts, rad + 12) + dots(pts, 4.5);
+        });
+        return s;
+      },
+      network() {
+        const R = rng(19), pts = scatter(R, 26, 22, 22, 196, 136, 22); let s = "";
+        const seen = new Set();
+        for (let i = 0; i < pts.length; i++) {
+          pts.map((q, j) => [Math.hypot(q[0] - pts[i][0], q[1] - pts[i][1]), j]).sort((a, b) => a[0] - b[0]).slice(1, 3).forEach(([d, j]) => {
+            const key = Math.min(i, j) + "-" + Math.max(i, j); if (seen.has(key)) return; seen.add(key);
+            const on = R() > .62, a = pts[i], b = pts[j];
+            s += `<line x1="${f(a[0])}" y1="${f(a[1])}" x2="${f(b[0])}" y2="${f(b[1])}" style="stroke:var(${on ? "--obj-c" : "--edge-c"})" stroke-width="${on ? 3 : 1.2}" opacity="${on ? 1 : .45}" stroke-linecap="round"/>`;
+          });
+        }
+        return s + pts.map(p => `<circle cx="${f(p[0])}" cy="${f(p[1])}" r="3.6" style="fill:var(--edge-c)"/>`).join("");
+      },
+      contacts() {
+        const objs = [[60, 140, 22], [104, 145, 17], [146, 137, 25], [192, 146, 16], [80, 103, 17], [128, 98, 19], [170, 104, 14], [104, 66, 15], [150, 65, 13]];
+        let s = `<line x1="20" y1="162" x2="220" y2="162" ${S} stroke-width="1.5" opacity=".5"/>`;
+        for (let i = 0; i < objs.length; i++) for (let j = i + 1; j < objs.length; j++) {
+          const a = objs[i], b = objs[j], g = Math.hypot(a[0] - b[0], a[1] - b[1]) - a[2] - b[2];
+          if (g < 6) s += line(a, b, 2, .95);
+        }
+        return objs.map(o => `<circle cx="${o[0]}" cy="${o[1]}" r="${o[2]}" ${F} opacity=".28"/>`).join("") + s + objs.map(o => `<circle cx="${o[0]}" cy="${o[1]}" r="3.4" ${F}/>`).join("");
+      },
+      events() {
+        const R = rng(3); let s = "";
+        for (let i = 0; i < 200; i++) {
+          const t = R(), x = 15 + t * 210, y = 145 - t * 100 + Math.sin(t * 7) * 12 + (R() - .5) * 26, pos = R() > .5;
+          s += `<circle cx="${f(x)}" cy="${f(y)}" r="${pos ? 2.4 : 2}" style="fill:var(${pos ? "--obj-c" : "--edge-c"})" opacity="${(.25 + .75 * t).toFixed(2)}"/>`;
+        }
+        return s;
+      },
+      carpo() {
+        const P = { W: [80, 152], t: [[62, 136], [48, 118], [40, 102], [34, 88]], i: [[68, 96], [64, 74], [62, 59], [61, 46]], m: [[82, 93], [82, 68], [82, 52], [82, 38]], r: [[95, 96], [98, 74], [100, 59], [101, 47]], p: [[106, 102], [111, 86], [114, 74], [116, 64]] };
+        const fingers = [P.t, P.i, P.m, P.r, P.p];
+        const pl = pts => pts.map(q => q.join(",")).join(" ");
+        const L = (a, b) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" ${S} stroke-width="1.6"/>`;
+        let s = "";
+        // hand and forearm silhouette
+        s += `<rect x="64" y="146" width="34" height="40" style="fill:var(--obj-c)" opacity=".16"/>`;
+        s += `<polygon points="${pl([[64, 150], [60, 144], P.t[0], P.i[0], P.m[0], P.r[0], P.p[0], [104, 136], [98, 150]])}" style="fill:var(--obj-c)" opacity=".16"/>`;
+        fingers.forEach((fg, k) => { s += `<polyline points="${pl(fg)}" fill="none" style="stroke:var(--obj-c)" stroke-width="${k === 4 ? 10 : 12}" stroke-linecap="round" stroke-linejoin="round" opacity=".16"/>`; });
+        // tracked skeleton
+        fingers.forEach(fg => { s += L(P.W, fg[0]); for (let j = 0; j < 3; j++) s += L(fg[j], fg[j + 1]); });
+        s += L(P.i[0], P.m[0]) + L(P.m[0], P.r[0]) + L(P.r[0], P.p[0]);
+        fingers.forEach(fg => fg.slice(0, 3).forEach(q => { s += `<circle cx="${q[0]}" cy="${q[1]}" r="2.3" style="fill:var(--edge-c)"/>`; }));
+        // fingertip force
+        [.55, 1, .8, .6, .35].forEach((fv, k) => {
+          const q = fingers[k][3], r = 2.6 + fv * 3.4;
+          s += `<circle class="pulse" style="animation-delay:${(k * .22).toFixed(2)}s;fill:var(--obj-c)" cx="${q[0]}" cy="${q[1]}" r="${(r + 4.5).toFixed(1)}" opacity=".22"/>`;
+          s += `<circle cx="${q[0]}" cy="${q[1]}" r="${r.toFixed(1)}" style="fill:var(--obj-c)"/>`;
+        });
+        // EMG wristband
+        s += `<rect x="59" y="158" width="44" height="13" rx="5" style="fill:var(--edge-c)"/>`;
+        [67, 76, 85, 94].forEach(x => { s += `<circle cx="${x}" cy="164.5" r="2.2" style="fill:var(--obj-c)"/>`; });
+        // signals leaving the band
+        s += `<path d="M 104 164 C 118 164, 120 104, 134 104" fill="none" ${S} stroke-width="1.2" stroke-dasharray="2 3" opacity=".7"/>`;
+        const R = rng(29);
+        [72, 104, 136].forEach((y0, k) => {
+          let d = `M 136 ${y0}`;
+          for (let x = 136; x <= 228; x += 2) {
+            const burst = Math.exp(-(((x - (160 + k * 14)) / 12) ** 2)) + .5 * Math.exp(-(((x - 210) / 8) ** 2));
+            d += ` L ${x} ${f(y0 + (R() - .5) * (3 + 24 * burst))}`;
+          }
+          s += `<path d="${d}" fill="none" ${S} stroke-width="1.2" stroke-linejoin="round" opacity="${k === 1 ? 1 : .7}"/>`;
+        });
+        return s;
+      },
+      emg() {
+        const R = rng(23); let s = "";
+        [45, 90, 135].forEach((y0, k) => {
+          let d = `M 16 ${y0}`;
+          for (let x = 16; x <= 224; x += 2) {
+            const burst = Math.exp(-(((x - (70 + k * 45)) / 22) ** 2)) + .6 * Math.exp(-(((x - (165 + k * 15)) / 14) ** 2));
+            d += ` L ${x} ${f(y0 + (R() - .5) * (4 + 34 * burst))}`;
+          }
+          s += `<path d="${d}" fill="none" style="stroke:var(${k === 1 ? "--obj-c" : "--edge-c"})" stroke-width="1.3" stroke-linejoin="round" opacity="${k === 1 ? 1 : .8}"/>`;
+        });
+        return s;
+      },
+      gates() {
+        let s = "";
+        const gates = [[34, 112, 46], [92, 82, 34], [146, 98, 25], [190, 72, 18]];
+        gates.forEach(([x, y, h]) => { s += `<rect x="${x - h / 2}" y="${y - h / 2}" width="${h}" height="${h}" fill="none" ${S} stroke-width="${2 + h / 20}" rx="2"/>`; });
+        s += `<path d="M 6 150 C 20 130, 26 118, 34 112 S 74 70, 92 82 S 130 112, 146 98 S 178 66, 190 72 S 222 76, 234 64" fill="none" style="stroke:var(--obj-c)" stroke-width="2" stroke-dasharray="5 4"/>`;
+        return s + `<circle cx="234" cy="64" r="4.5" ${F}/>`;
+      },
+      patches() {
+        const R = rng(31); let s = "";
+        const n = 6, m = 5, sz = 26, gap = 4, x0 = (240 - (n * sz + (n - 1) * gap)) / 2, y0 = (180 - (m * sz + (m - 1) * gap)) / 2;
+        for (let r = 0; r < m; r++) for (let c = 0; c < n; c++) {
+          const x = x0 + c * (sz + gap), y = y0 + r * (sz + gap), keep = R() > .6;
+          s += keep ? `<rect x="${f(x)}" y="${f(y)}" width="${sz}" height="${sz}" rx="2" ${F} opacity="${(.55 + R() * .45).toFixed(2)}"/>`
+                    : `<rect x="${f(x)}" y="${f(y)}" width="${sz}" height="${sz}" rx="2" fill="none" ${S} stroke-width="1.2" stroke-dasharray="3 3" opacity=".6"/>`;
+        }
+        return s;
+      },
+      spline() {
+        let s = `<line x1="14" y1="150" x2="226" y2="150" ${S} stroke-width="1.5" opacity=".5"/>`;
+        const knots = [[24, 150], [58, 92], [92, 150], [126, 88], [160, 150], [194, 94], [222, 140]];
+        let d = `M ${knots[0][0]} ${knots[0][1]}`;
+        for (let i = 1; i < knots.length; i++) { const a = knots[i - 1], b = knots[i]; d += ` C ${f(a[0] + 14)} ${f(a[1] - (a[1] > 120 ? 40 : 0))}, ${f(b[0] - 14)} ${f(b[1] - (b[1] > 120 ? 40 : 0))}, ${b[0]} ${b[1]}`; }
+        s += `<path d="${d}" fill="none" ${S} stroke-width="2"/>`;
+        knots.forEach(k => { s += k[1] > 120 ? `<circle cx="${k[0]}" cy="150" r="5.5" ${F}/>` : `<circle cx="${k[0]}" cy="${k[1]}" r="3.4" style="fill:var(--edge-c)"/>`; });
+        return s;
+      }
+    };
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) document.querySelectorAll(".thumb video").forEach(v => { v.removeAttribute("autoplay"); v.pause(); v.controls = true; });
+    document.querySelectorAll(".thumb[data-motif]").forEach(el => {
+      el.setAttribute("aria-hidden", "true");
+      el.innerHTML = `<svg viewBox="0 0 240 180">${motifs[el.dataset.motif]()}</svg>`;
+    });
+
+    /* carpo: hand with EMG wristband grasps and lifts a mug; skeleton overlay, fingertip force as color */
+    const cEl = document.querySelector('.thumb[data-anim="carpo"]');
+    if (cEl) {
+      cEl.setAttribute("aria-hidden", "true");
+      cEl.innerHTML = '<svg viewBox="0 0 240 180"></svg>';
+      const svg = cEl.firstChild;
+      // Digits: thumb, index, middle, ring, pinky. Keypoints: base, two joints, tip.
+      const OPEN = [
+        [[76, 96], [90, 84], [100, 73], [108, 64]],
+        [[106, 90], [127, 85], [142, 82], [154, 80]],
+        [[108, 101], [131, 98], [148, 96], [161, 95]],
+        [[107, 112], [128, 111], [144, 110], [156, 110]],
+        [[104, 122], [121, 123], [134, 124], [144, 125]]
+      ];
+      const GRIP = [
+        [[76, 96], [92, 86], [106, 79], [118, 75]],
+        [[106, 90], [126, 89], [142, 92], [153, 98]],
+        [[108, 101], [129, 101], [146, 104], [157, 110]],
+        [[107, 112], [127, 113], [142, 116], [152, 121]],
+        [[104, 122], [120, 124], [132, 127], [140, 131]]
+      ];
+      const WIDTH = [[13, 12, 11, 9.5], [10.5, 9.5, 8.6, 7.6], [11, 10, 9, 8], [10.5, 9.5, 8.6, 7.6], [9, 8, 7.2, 6.2]];
+      const LAG = [-.06, 0, .05, .1, .15];
+      const WEIGHT = [.7, 1, .85, .6, .4];
+      const PALM = [[64, 99], [84, 90], [102, 84], [111, 90], [111, 124], [101, 129], [84, 131], [64, 127]];
+      const ARM = [[-10, 93], [30, 94.5], [64, 99], [64, 127], [30, 132], [-10, 135]];
+      const WRIST = [66, 113];
+      const T = 5.2;
+      const clamp = x => Math.max(0, Math.min(1, x));
+      const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+      const seg = (t, a, b) => ease(clamp((t - a) / (b - a)));
+      const lerp = (a, b, u) => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u];
+      const heat = u => {
+        const stops = [[47, 143, 131], [226, 163, 48], [217, 72, 59]];
+        const x = clamp(u) * 2, i = Math.min(1, Math.floor(x)), k = x - i;
+        return `rgb(${stops[i].map((v, j) => Math.round(v + (stops[i + 1][j] - v) * k)).join(",")})`;
+      };
+      // Catmull-Rom sampling through keypoints
+      function spline(pts, closed, steps = 8) {
+        const n = pts.length, out = [];
+        const get = i => closed ? pts[(i + n) % n] : pts[Math.max(0, Math.min(n - 1, i))];
+        const last = closed ? n : n - 1;
+        for (let i = 0; i < last; i++) {
+          const p0 = get(i - 1), p1 = get(i), p2 = get(i + 1), p3 = get(i + 2);
+          for (let s = 0; s < steps; s++) {
+            const t = s / steps, t2 = t * t, t3 = t2 * t;
+            out.push([0, 1].map(d => .5 * ((2 * p1[d]) + (-p0[d] + p2[d]) * t + (2 * p0[d] - 5 * p1[d] + 4 * p2[d] - p3[d]) * t2 + (-p0[d] + 3 * p1[d] - 3 * p2[d] + p3[d]) * t3)));
+          }
+        }
+        if (!closed) out.push(pts[n - 1]);
+        return out;
+      }
+      const toPath = (pts, close) => "M" + pts.map(q => `${f(q[0])} ${f(q[1])}`).join(" L") + (close ? " Z" : "");
+      // A tapered finger: smooth centerline, width interpolated along it, rounded ends
+      function finger(pts, w) {
+        const steps = 8, c = spline(pts, false, steps), L = [], R = [];
+        c.forEach((q, i) => {
+          const a = c[Math.max(0, i - 1)], b = c[Math.min(c.length - 1, i + 1)];
+          let dx = b[0] - a[0], dy = b[1] - a[1]; const n = Math.hypot(dx, dy) || 1; dx /= n; dy /= n;
+          const u = i / steps, k = Math.min(2, Math.floor(u)), r = (w[k] + (w[k + 1] - w[k]) * (u - k)) / 2;
+          L.push([q[0] - dy * r, q[1] + dx * r]); R.push([q[0] + dy * r, q[1] - dx * r]);
+        });
+        const arc = (ctr, from, r, sweep) => { const out = []; for (let s = 1; s < 8; s++) { const th = from + sweep * s / 8; out.push([ctr[0] + Math.cos(th) * r, ctr[1] + Math.sin(th) * r]); } return out; };
+        const tip = c[c.length - 1], tA = Math.atan2(L[L.length - 1][1] - tip[1], L[L.length - 1][0] - tip[0]);
+        const base = c[0], bA = Math.atan2(R[0][1] - base[1], R[0][0] - base[0]);
+        return toPath([...L, ...arc(tip, tA, w[3] / 2, -Math.PI), ...R.reverse(), ...arc(base, bA, w[0] / 2, -Math.PI)], true);
+      }
+      let fsm = [0, 0, 0, 0, 0], lastT = 0;
+      function frame(time, instant) {
+        const tt = time / 1000, t = tt % T, dt = instant ? 1 : Math.min(.05, Math.max(0, tt - lastT)); lastT = tt;
+        const off = -40 * (1 - seg(t, 0, 1.2)) - 40 * seg(t, 4.4, 5.2);
+        const lift = 12 * seg(t, 1.8, 2.9) * (1 - seg(t, 3.3, 4.2));
+        const close = LAG.map(l => seg(t, .8 + l, 1.7 + l) * (1 - seg(t, 4.0 + l * .6, 4.6 + l * .6)));
+        const sh = q => [q[0] + off, q[1] - lift];
+        const D = OPEN.map((c, k) => c.map((q, j) => sh(lerp(q, GRIP[k][j], close[k]))));
+        const target = close.map((c, k) => clamp((c - .7) / .3) * (.55 + .45 * lift / 12) * WEIGHT[k]);
+        fsm = fsm.map((v, k) => v + (target[k] - v) * (1 - Math.exp(-dt * 9)));
+        const O = "var(--skin-line)", SK = "var(--skin)";
+        const skin = d => `<path d="${d}" style="fill:${SK};stroke:${O}" stroke-width="1.4" stroke-linejoin="round"/>`;
+        let h = "";
+        h += `<line x1="0" y1="150.5" x2="240" y2="150.5" style="stroke:var(--line-c)" stroke-width="1.5"/>`;
+        h += `<ellipse cx="146" cy="151.5" rx="${f(32 - lift)}" ry="2.6" style="fill:var(--shadow-c)" opacity="${(.45 - lift * .02).toFixed(2)}"/>`;
+        h += `<g transform="translate(0 ${f(-lift)})">`;
+        h += `<path d="M 178 88 C 203 88, 205 132, 178 134" fill="none" style="stroke:var(--mug-line)" stroke-width="10" stroke-linecap="round"/>`;
+        h += `<path d="M 178 88 C 203 88, 205 132, 178 134" fill="none" style="stroke:var(--mug)" stroke-width="7" stroke-linecap="round"/>`;
+        h += `<rect x="114" y="70" width="64" height="80" rx="8" style="fill:var(--mug);stroke:var(--mug-line)" stroke-width="1.4"/>`;
+        h += `<ellipse cx="146" cy="72" rx="31" ry="3.6" style="fill:var(--mug-line)" opacity=".4"/>`;
+        h += `<rect x="121" y="78" width="6" height="64" rx="3" style="fill:#fff" opacity=".18"/>`;
+        h += `</g>`;
+        h += skin(toPath(spline(ARM.map(sh), false, 6).concat([sh([-10, 135])]), true));
+        h += skin(finger(D[0], WIDTH[0]));
+        const thn = D[0][3], thp = D[0][2], ang = Math.atan2(thn[1] - thp[1], thn[0] - thp[0]) * 180 / Math.PI;
+        h += `<ellipse cx="${f(thn[0] - 1.2)}" cy="${f(thn[1] - 1.8)}" rx="3.2" ry="2.2" transform="rotate(${f(ang)} ${f(thn[0] - 1.2)} ${f(thn[1] - 1.8)})" style="fill:#fff" opacity=".4"/>`;
+        h += skin(toPath(spline(PALM.map(sh), true, 6), true));
+        [4, 3, 2, 1].forEach(k => { h += skin(finger(D[k], WIDTH[k])); });
+        [1, 2, 3, 4].forEach(k => { const q = D[k][0]; h += `<ellipse cx="${f(q[0] - 1)}" cy="${f(q[1] - 1.2)}" rx="3" ry="2.2" style="fill:#fff" opacity=".16"/>`; });
+        const b = sh([56, 94]);
+        h += `<rect x="${f(b[0])}" y="${f(b[1])}" width="13" height="38" rx="4" style="fill:var(--band)"/>`;
+        const fAll = Math.max(...fsm);
+        [101, 109, 117, 125].forEach((y, i) => { const q = sh([62.5, y]); h += `<circle cx="${f(q[0])}" cy="${f(q[1])}" r="1.8" style="fill:var(--obj-c)" opacity="${(.35 + .65 * clamp(fAll * 1.3 - i * .05)).toFixed(2)}"/>`; });
+        const wrist = sh(WRIST);
+        const B = (a, c) => `<line x1="${f(a[0])}" y1="${f(a[1])}" x2="${f(c[0])}" y2="${f(c[1])}" style="stroke:var(--bone)" stroke-width="1.1" opacity=".9"/>`;
+        D.forEach(c => { h += B(wrist, c[0]); for (let j = 0; j < 3; j++) h += B(c[j], c[j + 1]); });
+        h += B(D[1][0], D[2][0]) + B(D[2][0], D[3][0]) + B(D[3][0], D[4][0]);
+        [wrist, ...D.flatMap(c => c.slice(0, 3))].forEach(q => { h += `<circle cx="${f(q[0])}" cy="${f(q[1])}" r="1.6" style="fill:var(--bone)"/>`; });
+        D.forEach((c, k) => {
+          const q = c[3], u = fsm[k], col = heat(u / Math.max(.4, WEIGHT[1]));
+          h += `<circle cx="${f(q[0])}" cy="${f(q[1])}" r="${f(3 + 5 * u)}" style="fill:${col}" opacity="${(.1 + .3 * u).toFixed(2)}"/>`;
+          h += `<circle cx="${f(q[0])}" cy="${f(q[1])}" r="2.7" style="fill:${col};stroke:var(--thumb-bg)" stroke-width="1"/>`;
+        });
+        svg.innerHTML = h;
+      }
+      let raf = 0, visible = true;
+      const loop = time => { frame(time); raf = requestAnimationFrame(loop); };
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+      const start = () => { if (raf || reduce.matches || !visible) return; lastT = performance.now() / 1000; raf = requestAnimationFrame(loop); };
+      const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(cEl);
+      reduce.addEventListener("change", () => reduce.matches ? stop() : start());
+      if (reduce.matches) { for (let i = 0; i < 20; i++) frame(2800, true); } else frame(performance.now());
+    }
+  })();
+  </script>
 </body>
 </html>
