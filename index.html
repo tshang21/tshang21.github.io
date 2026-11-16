@@ -15,7 +15,7 @@
       --bg: #F7F8F6; --ink: #1F2A37; --muted: #5B6573; --line: #DFE3DD;
       --accent: #2F5D50; --thumb: #E6EBE6; --photo-bg: #DCE5DF; --photo-ink: #2F5D50;
       --edge-c: #2F5D50; --obj-c: #B9852E;
-      --skin: #EBCDB6; --skin-line: #B88C72; --band: #26312E; --bone: #1F6F64; --mug: #B7C7D2; --mug-line: #7E95A4; --line-c: #C9D0C9; --shadow-c: #9AA39C; --thumb-bg: #E6EBE6;
+      --skin: #EBCDB6; --skin-line: #B88C72; --band: #26312E; --bone: #1F6F64; --mug: #B7C7D2; --mug-line: #7E95A4; --line-c: #C9D0C9; --shadow-c: #9AA39C; --thumb-bg: #E6EBE6; --floor: #FBFCFA;
       color-scheme: light;
       box-sizing: border-box;
       padding-top: env(safe-area-inset-top, 0px);
@@ -26,7 +26,7 @@
         --bg: #151A19; --ink: #E2E7E4; --muted: #9AA6A0; --line: #2A3330;
         --accent: #8CC3AE; --thumb: #1E2624; --photo-bg: #22302B; --photo-ink: #8CC3AE;
         --edge-c: #8CC3AE; --obj-c: #D9AA55;
-        --skin: #D8B096; --skin-line: #8E6750; --band: #0E1312; --bone: #1F6F64; --mug: #6F8594; --mug-line: #4A5D6A; --line-c: #34403C; --shadow-c: #000000; --thumb-bg: #1E2624;
+        --skin: #D8B096; --skin-line: #8E6750; --band: #0E1312; --bone: #1F6F64; --mug: #6F8594; --mug-line: #4A5D6A; --line-c: #34403C; --shadow-c: #000000; --thumb-bg: #1E2624; --floor: #28312E;
         color-scheme: dark;
       }
     }
@@ -34,7 +34,7 @@
       --bg: #151A19; --ink: #E2E7E4; --muted: #9AA6A0; --line: #2A3330;
       --accent: #8CC3AE; --thumb: #1E2624; --photo-bg: #22302B; --photo-ink: #8CC3AE;
       --edge-c: #8CC3AE; --obj-c: #D9AA55;
-      --skin: #D8B096; --skin-line: #8E6750; --band: #0E1312; --bone: #1F6F64; --mug: #6F8594; --mug-line: #4A5D6A; --line-c: #34403C; --shadow-c: #000000; --thumb-bg: #1E2624;
+      --skin: #D8B096; --skin-line: #8E6750; --band: #0E1312; --bone: #1F6F64; --mug: #6F8594; --mug-line: #4A5D6A; --line-c: #34403C; --shadow-c: #000000; --thumb-bg: #1E2624; --floor: #28312E;
       color-scheme: dark;
     }
     html { scroll-padding-top: env(safe-area-inset-top, 0px); -webkit-text-size-adjust: 100%; }
@@ -137,7 +137,7 @@
 
     <main>
       <h2 class="vh">About</h2>
-      <p>I’m an undergraduate student in Artificial Intelligence, with a minor in Mathematics, and a master’s student in Robotics at the University of Pennsylvania. I work on graph architectures and graph signal processing with <a href="https://alelab.seas.upenn.edu/" target="_blank" rel="noopener">Dr. Alejandro Ribeiro</a>, and on representations for event cameras with <a href="https://pratikac.github.io/" target="_blank" rel="noopener">Dr. Pratik Chaudhari</a>.</p>
+      <p>I’m an undergraduate student in Artificial Intelligence, with a minor in Mathematics, and a master’s student in Robotics at the University of Pennsylvania. I work on graph architectures and graph signal processing with <a href="https://alelab.seas.upenn.edu/" target="_blank" rel="noopener">Prof. Alejandro Ribeiro</a>, and on representations for event cameras with <a href="https://pratikac.github.io/" target="_blank" rel="noopener">Prof. Pratik Chaudhari</a>.</p>
 
       <!--
         Each entry's image: replace the <div class="thumb" ...> with
@@ -168,20 +168,20 @@
       <h2>Research</h2>
 
       <article class="entry">
-        <div class="thumb"><video src="thesis.mp4" autoplay muted loop playsinline aria-label="Simulated tabletop scene of rigid objects with their contact graph overlaid"></video></div>
-        <div>
-          <h3>Graph Foundation Models for Robotic Navigation</h3>
-          <p class="venue">Master’s thesis, 2026</p>
-          <p class="desc">Transferable graph representations of partially observed environments for robot navigation, built to generalize across environment sizes and layouts.</p>
-        </div>
-      </article>
-
-      <article class="entry">
         <div class="thumb"><video src="recurrent-f3.mp4" autoplay muted loop playsinline aria-label="Event camera on an urban drive: ground-truth events on top, Recurrent F3 forecast in orange below"></video></div>
         <div>
           <h3>Recurrent Fast Feature Field</h3>
           <p class="venue">LyRL, 2026</p>
           <p class="desc">A recurrent extension of Fast Feature Field (F³) that forecasts event-camera features 100 ms into the future.</p>
+        </div>
+      </article>
+
+      <article class="entry">
+        <div class="thumb" data-anim="nav"></div>
+        <div>
+          <h3>Graph Foundation Models for Robotic Navigation</h3>
+          <p class="venue">Master’s thesis, 2026</p>
+          <p class="desc">Transferable graph representations of partially observed environments for robot navigation, built to generalize across environment sizes and layouts.</p>
         </div>
       </article>
 
@@ -477,6 +477,84 @@
       new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(cEl);
       reduce.addEventListener("change", () => reduce.matches ? stop() : start());
       if (reduce.matches) { for (let i = 0; i < 20; i++) frame(2800, true); } else frame(performance.now());
+    }
+    /* thesis: a robot explores a partially observed floor plan and builds a scene graph as it goes */
+    const nEl = document.querySelector('.thumb[data-anim="nav"]');
+    if (nEl) {
+      nEl.setAttribute("aria-hidden", "true");
+      nEl.innerHTML = '<svg viewBox="0 0 240 180"></svg>';
+      const svg = nEl.firstChild;
+      const cl = x => Math.max(0, Math.min(1, x));
+      const pop = u => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2); };
+      const WALLS = [[14, 14, 226, 14], [226, 14, 226, 166], [226, 166, 14, 166], [14, 166, 14, 14],
+        [90, 14, 90, 40], [90, 56, 90, 80], [160, 14, 160, 40], [160, 56, 160, 80],
+        [14, 80, 40, 80], [56, 80, 120, 80], [136, 80, 190, 80], [206, 80, 226, 80],
+        [110, 80, 110, 120], [110, 136, 110, 166]];
+      const ROOMS = [
+        { c: [52, 47], r: [14, 14, 90, 80] }, { c: [125, 47], r: [90, 14, 160, 80] }, { c: [193, 47], r: [160, 14, 226, 80] },
+        { c: [62, 123], r: [14, 80, 110, 166] }, { c: [168, 123], r: [110, 80, 226, 166] }];
+      const DOORS = [[0, 1], [1, 2], [0, 3], [1, 4], [3, 4], [2, 4]];
+      const OBJS = [[30, 30, 0], [72, 64, 0], [140, 28, 1], [208, 30, 2], [178, 66, 2], [32, 108, 3], [84, 148, 3], [146, 104, 4], [206, 150, 4], [204, 104, 4]];
+      const WP = [[36, 150], [60, 128], [48, 96], [48, 66], [56, 46], [80, 48], [104, 48], [126, 46], [148, 48], [172, 48], [192, 44], [198, 66], [198, 94], [182, 112], [166, 128], [176, 146]];
+      const pts = [];
+      for (let i = 0; i < WP.length - 1; i++) {
+        const p0 = WP[Math.max(0, i - 1)], p1 = WP[i], p2 = WP[i + 1], p3 = WP[Math.min(WP.length - 1, i + 2)];
+        for (let s = 0; s < 10; s++) {
+          const t = s / 10, t2 = t * t, t3 = t2 * t;
+          pts.push([0, 1].map(k => .5 * (2 * p1[k] + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)));
+        }
+      }
+      pts.push(WP[WP.length - 1]);
+      const cum = [0];
+      for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+      const LEN = cum[cum.length - 1], MOVE = 9, HOLD = 1.8, FADE = .7, T = MOVE + HOLD + FADE, R = 30, SEE = 36;
+      const inR = (p, r) => p[0] > r[0] && p[0] < r[2] && p[1] > r[1] && p[1] < r[3];
+      const roomD = ROOMS.map(rm => { for (let i = 0; i < pts.length; i++) if (inR(pts[i], rm.r)) return cum[i]; return Infinity; });
+      const objD = OBJS.map(o => { for (let i = 0; i < pts.length; i++) if (inR(pts[i], ROOMS[o[2]].r) && Math.hypot(pts[i][0] - o[0], pts[i][1] - o[1]) < SEE) return cum[i]; return Infinity; });
+      const grow = (A, B, u) => [A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u];
+      const ln = (a, b, w, color, extra = "") => `<line x1="${f(a[0])}" y1="${f(a[1])}" x2="${f(b[0])}" y2="${f(b[1])}" style="stroke:${color}" stroke-width="${w}" stroke-linecap="round" ${extra}/>`;
+      function frame(time) {
+        const t = (time / 1000) % T, x = Math.min(1, t / MOVE);
+        const d = LEN * (x - Math.sin(2 * Math.PI * x) / (2 * Math.PI));
+        const fade = 1 - cl((t - MOVE - HOLD) / FADE);
+        let k = 0; while (k < cum.length - 2 && cum[k + 1] <= d) k++;
+        const u = (d - cum[k]) / ((cum[k + 1] - cum[k]) || 1);
+        const rx = pts[k][0] + (pts[k + 1][0] - pts[k][0]) * u, ry = pts[k][1] + (pts[k + 1][1] - pts[k][1]) * u;
+        const ang = Math.atan2(pts[k + 1][1] - pts[k][1], pts[k + 1][0] - pts[k][0]);
+        const pl = pts.slice(0, k + 1).concat([[rx, ry]]).map(q => `${f(q[0])},${f(q[1])}`).join(" ");
+        let h = `<defs><mask id="navmask" maskUnits="userSpaceOnUse" x="0" y="0" width="240" height="180"><rect width="240" height="180" fill="black"/>` +
+          `<polyline points="${pl}" fill="none" stroke="white" stroke-width="${2 * R}" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${f(rx)}" cy="${f(ry)}" r="${R}" fill="white"/></mask></defs>`;
+        h += `<g opacity="${fade.toFixed(3)}">`;
+        h += `<rect x="14" y="14" width="212" height="152" fill="none" style="stroke:var(--line-c)" stroke-width="1" stroke-dasharray="3 4"/>`;
+        h += `<g mask="url(#navmask)"><rect x="14" y="14" width="212" height="152" style="fill:var(--floor)"/>`;
+        OBJS.forEach(o => { h += `<rect x="${o[0] - 5}" y="${o[1] - 5}" width="10" height="10" rx="2" style="fill:var(--line-c)"/>`; });
+        WALLS.forEach(w => { h += ln([w[0], w[1]], [w[2], w[3]], 2.4, "var(--muted)"); });
+        h += `</g>`;
+        h += `<polyline points="${pl}" fill="none" style="stroke:var(--obj-c)" stroke-width="1.2" stroke-dasharray="2 3" opacity=".7"/>`;
+        // scene graph edges: object-room, then room-room through doors
+        OBJS.forEach((o, i) => { const dd = Math.max(objD[i], roomD[o[2]]); if (d >= dd) h += ln(ROOMS[o[2]].c, grow(ROOMS[o[2]].c, o, cl((d - dd) / 14)), 1, "var(--edge-c)", 'opacity=".7"'); });
+        DOORS.forEach(([a, b]) => {
+          const dd = Math.max(roomD[a], roomD[b]); if (d < dd) return;
+          const [s, e] = roomD[a] <= roomD[b] ? [a, b] : [b, a];
+          h += ln(ROOMS[s].c, grow(ROOMS[s].c, ROOMS[e].c, cl((d - dd) / 22)), 2, "var(--edge-c)");
+        });
+        OBJS.forEach((o, i) => { if (d >= objD[i]) h += `<circle cx="${o[0]}" cy="${o[1]}" r="${f(2.6 * pop(cl((d - objD[i]) / 12)))}" style="fill:var(--edge-c)"/>`; });
+        ROOMS.forEach((rm, i) => { if (d >= roomD[i]) { const s = pop(cl((d - roomD[i]) / 14)); h += `<circle cx="${rm.c[0]}" cy="${rm.c[1]}" r="${f(5.2 * s)}" style="fill:var(--obj-c);stroke:var(--thumb-bg)" stroke-width="1.4"/>`; } });
+        // robot with its sensing range
+        h += `<circle cx="${f(rx)}" cy="${f(ry)}" r="${R}" fill="none" style="stroke:var(--edge-c)" stroke-width="1" stroke-dasharray="3 3" opacity=".45"/>`;
+        h += ln([rx, ry], [rx + Math.cos(ang) * 9, ry + Math.sin(ang) * 9], 2, "var(--ink)");
+        h += `<circle cx="${f(rx)}" cy="${f(ry)}" r="4.2" style="fill:var(--ink);stroke:var(--thumb-bg)" stroke-width="1.2"/>`;
+        h += `</g>`;
+        svg.innerHTML = h;
+      }
+      let raf = 0, visible = true;
+      const loop = time => { frame(time); raf = requestAnimationFrame(loop); };
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+      const start = () => { if (raf || reduce.matches || !visible) return; raf = requestAnimationFrame(loop); };
+      const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(nEl);
+      reduce.addEventListener("change", () => reduce.matches ? stop() : start());
+      frame(reduce.matches ? MOVE * 1000 : performance.now());
     }
   })();
   </script>
